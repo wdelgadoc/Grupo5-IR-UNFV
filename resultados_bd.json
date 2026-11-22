@@ -1,0 +1,243 @@
+{
+ "motor": "sqlite3 3.53.1",
+ "python": "3.13.18",
+ "fecha_ejecucion": "2026-11-21",
+ "alcance": "Esquema sintético académico con datos ficticios. No corresponde a la base de datos de VAOPE.",
+ "total": 33,
+ "paso": 33,
+ "fallo": 0,
+ "error": 0,
+ "resultados": [
+  {
+   "prueba": "BD-01",
+   "invariante": "Unicidad del correo electrónico por cuenta",
+   "refs": "RF01 · RN-10",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: usuarios.correo"
+  },
+  {
+   "prueba": "BD-02",
+   "invariante": "Unicidad del documento de identidad por cuenta",
+   "refs": "RF01 · RN-10",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: usuarios.documento"
+  },
+  {
+   "prueba": "BD-03",
+   "invariante": "Restricción de mayoría de edad en el registro",
+   "refs": "RF01 · RN-02",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: CHECK constraint failed: CAST((julianday('2026-11-16') - julianday(fecha_nacimiento))/365.25 AS INT) >= 18"
+  },
+  {
+   "prueba": "BD-04",
+   "invariante": "La suma de aforos de zonas no supera la capacidad de la función",
+   "refs": "RF14, RF15 · RN-14",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-14: la suma de aforos supera la capacidad de la funcion"
+  },
+  {
+   "prueba": "BD-05",
+   "invariante": "Un organizador no validado no puede publicar eventos",
+   "refs": "RF38 · RN-23 · CU-19",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-23: el organizador no esta validado"
+  },
+  {
+   "prueba": "BD-06",
+   "invariante": "El precio de una zona debe ser mayor que cero",
+   "refs": "RF16",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: CHECK constraint failed: precio > 0"
+  },
+  {
+   "prueba": "BD-07",
+   "invariante": "Un código QR identifica a un único ticket",
+   "refs": "RF20 · RN-08",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: tickets.codigo_qr"
+  },
+  {
+   "prueba": "BD-08",
+   "invariante": "Un ticket solo pasa de emitido a utilizado una vez",
+   "refs": "RF22 · RN-08",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-08: el ticket no esta en estado emitido Se conservó el primer ingreso 2026-11-20 19:05."
+  },
+  {
+   "prueba": "BD-09",
+   "invariante": "No se emite ticket sin pago aprobado",
+   "refs": "RF19, RF20 · RN-06",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-06: no se emite ticket sin pago aprobado"
+  },
+  {
+   "prueba": "BD-10",
+   "invariante": "Idempotencia del identificador de operación de la pasarela",
+   "refs": "RF25, RF26 · RN-20",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: transacciones.operacion_externa"
+  },
+  {
+   "prueba": "BD-11",
+   "invariante": "El cupo promocional no se sobreutiliza",
+   "refs": "RF32, RF33 · RN-17",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-17: cupo promocional agotado"
+  },
+  {
+   "prueba": "BD-12",
+   "invariante": "El reintento de una devolución ya registrada se rechaza y la devolución del otro boleto del mismo cargo procede",
+   "refs": "RF28 · RN-20",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-20: la devolucion de la compra excede el precio del boleto El control de saldo del boleto rechazó el reintento y la solicitud original se conservó «solicitado» por S/ 120.00. La devolución del segundo boleto sobre el mismo cargo fue aceptada: 2 devoluciones por S/ 240.00, que es el importe cobrado. El rechazo por clave de idempotencia se verifica en BD-24."
+  },
+  {
+   "prueba": "BD-13",
+   "invariante": "Una causa de devolución no contemplada se rechaza",
+   "refs": "RF28 · RN-16",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-20: el cargo devuelto no pertenece a la compra del boleto"
+  },
+  {
+   "prueba": "BD-14",
+   "invariante": "El conflicto de lectura sin conexión queda registrado y es detectable",
+   "refs": "RF22 · RN-19",
+   "resultado": "PASO",
+   "detalle": "Detectadas 2 lecturas del mismo ticket en dispositivos distintos; se marcó 1 como conflicto y se conservó la primera por hora. La detección es posterior a la sincronización, no la impide."
+  },
+  {
+   "prueba": "BD-15",
+   "invariante": "Cada reclamo recibe un código único",
+   "refs": "RF35 · RN-18",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: casos_soporte.numero"
+  },
+  {
+   "prueba": "BD-16",
+   "invariante": "El estado de un caso se limita al catálogo definido",
+   "refs": "RF34 a RF37",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: CHECK constraint failed: estado IN ('abierto','en_atencion','en_espera',\n                                     'resuelto','cerrado')"
+  },
+  {
+   "prueba": "BD-17",
+   "invariante": "La disponibilidad descuenta vendidos y reservas vigentes",
+   "refs": "RF17, RF18 · RN-03",
+   "resultado": "PASO",
+   "detalle": "Aforo 100, vendidas 2, reservadas vigentes 3 → disponibles 95."
+  },
+  {
+   "prueba": "BD-18",
+   "invariante": "Una reserva expirada deja de bloquear inventario",
+   "refs": "RF18 · RN-03",
+   "resultado": "PASO",
+   "detalle": "Con la reserva vencida la disponibilidad era 100 por fecha de expiración pasada; tras marcarla expirada quedó en 100."
+  },
+  {
+   "prueba": "BD-19",
+   "invariante": "Todo ticket se relaciona con una transacción y una reserva",
+   "refs": "RF19, RF20 · RN-06",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: FOREIGN KEY constraint failed"
+  },
+  {
+   "prueba": "BD-20",
+   "invariante": "El valor de una promoción porcentual no excede el 100 %",
+   "refs": "RF30 · RN-17",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: CHECK constraint failed: tipo <> 'porcentaje' OR valor <= 100"
+  },
+  {
+   "prueba": "BD-21",
+   "invariante": "El límite de entradas por comprador considera compras y reservas vigentes",
+   "refs": "RF39 · RN-01",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-01: se supera el limite de entradas por comprador El cómputo cruzó zonas distintas de la misma función."
+  },
+  {
+   "prueba": "BD-22",
+   "invariante": "Un pago aprobado sobre reserva expirada no emite ticket",
+   "refs": "RF25 · RN-21",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-21: reserva expirada, la transaccion va a conciliacion"
+  },
+  {
+   "prueba": "BD-23",
+   "invariante": "Tras devolver el excedente, la reversión de la compra anula el boleto al confirmarse",
+   "refs": "RF28 · RN-16, RN-22",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-22: el cobro duplicado restituye el cargo excedente, no anula el boleto Confirmado el reembolso del cargo original, el boleto quedó «anulado» y el saldo neto de los dos cargos es S/ 0.00."
+  },
+  {
+   "prueba": "BD-24",
+   "invariante": "La clave de idempotencia del reembolso impide operaciones repetidas",
+   "refs": "RF28 · RN-20",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: UNIQUE constraint failed: reembolsos.clave_idem"
+  },
+  {
+   "prueba": "BD-25",
+   "invariante": "El Libro de Reclamaciones admite registro sin cuenta ni compra",
+   "refs": "RF35 · CU-17",
+   "resultado": "PASO",
+   "detalle": "Operación aceptada como se esperaba. Reclamo registrado sin usuario ni transacción asociada."
+  },
+  {
+   "prueba": "BD-26",
+   "invariante": "El historial de respuestas de un caso no se sobrescribe",
+   "refs": "RF37 · RN-18",
+   "resultado": "PASO",
+   "detalle": "Reapertura del caso con 2 respuestas conservadas en el historial."
+  },
+  {
+   "prueba": "BD-27",
+   "invariante": "La devolución del cargo excedente identifica el cargo, conserva el boleto y deja el importe neto cobrado",
+   "refs": "RF28 · RN-16, RN-20, RN-22",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-22: el cobro duplicado restituye el cargo excedente, no anula el boleto Se devolvió OP-0028; el boleto conserva el estado «emitido» con su código QR-DUP, el importe neto cobrado es S/ 120.00 y el cupo sigue vendido (1)."
+  },
+  {
+   "prueba": "BD-28",
+   "invariante": "Un reembolso no puede asociarse al cargo de otra compra",
+   "refs": "RF28 · RN-20",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-20: el cargo devuelto no pertenece a la compra del boleto El boleto conserva el estado «emitido» y el saldo de su compra permanece en S/ 120.00."
+  },
+  {
+   "prueba": "BD-29",
+   "invariante": "Dos devoluciones parciales del mismo cargo anulan cada boleto por separado y dejan el saldo en cero",
+   "refs": "RF28 · RN-20, RN-22",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-22: no se anula el boleto sin reembolso confirmado Cada confirmación anuló únicamente su boleto; devueltos S/ 240.00 de los S/ 240.00 cobrados, el saldo final del cargo es S/ 0.00."
+  },
+  {
+   "prueba": "BD-30",
+   "invariante": "Al actualizar un reembolso rigen el saldo reembolsable del cargo y el precio del boleto",
+   "refs": "RF28 · RN-20",
+   "resultado": "PASO",
+   "detalle": "Dado un cargo de S/ 240.00 que cubre dos boletos de S/ 120.00 y una devolución en trámite de S/ 100.00 sobre el primero, elevarla a S/ 150.00 se rechazó por el precio del boleto («RN-20: la devolucion de la compra excede el precio del boleto») y elevarla a S/ 250.00 cambiando la causa se rechazó por el saldo del cargo («RN-20: la devolucion excede el saldo reembolsable del cargo»). La devolución conserva S/ 100.00 y su causa «cancelacion»."
+  },
+  {
+   "prueba": "BD-31",
+   "invariante": "No se anula un boleto con la devolución de otro cargo de la misma compra",
+   "refs": "RF28 · RN-22",
+   "resultado": "PASO",
+   "detalle": "Rechazado por el motor: RN-22: el cargo devuelto no es el que sustenta el boleto Confirmada la devolución de OP-0042, que es el cargo que sustenta el boleto, la anulación procedió y el boleto quedó «anulado»."
+  },
+  {
+   "prueba": "BD-32",
+   "invariante": "La confirmación repetida de un reembolso es idempotente y el reembolso confirmado no admite reproceso",
+   "refs": "RF28 · RN-20, RN-22",
+   "resultado": "PASO",
+   "detalle": "La confirmación repetida fue aceptada sin duplicar el movimiento: 1 registro confirmado por S/ 120.00. El reproceso se rechazó dos veces: «RN-20: el reembolso confirmado no admite reproceso» y «RN-20: el reembolso confirmado no admite reproceso». El reembolso permanece «confirmado» por S/ 120.00."
+  },
+  {
+   "prueba": "BD-33",
+   "invariante": "En la misma compra, la actualización admisible y la devolución del otro boleto agotan el cargo sin duplicar movimientos",
+   "refs": "RF28 · RN-20, RN-22",
+   "resultado": "PASO",
+   "detalle": "La actualización admisible de S/ 100.00 a S/ 120.00 y la devolución del segundo boleto fueron aceptadas: 2 movimientos confirmados por S/ 240.00, saldo del cargo S/ 0.00 y ambos boletos anulados. La confirmación repetida no alteró los movimientos ni los estados, y una devolución adicional se rechazó: «RN-20: la devolucion excede el saldo reembolsable del cargo»."
+  }
+ ]
+}

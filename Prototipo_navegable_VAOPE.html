@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VAOPE · Expediente 8.0 · Línea base académica v2.4</title>
+<style>
+:root{
+  --tinta:#1F1A33; --azul:#2E1F63; --lila:#5B4BC4; --claro:#F3F1FA; --borde:#DCD7F0;
+  --gris:#76767f; --ok:#1e7a4b; --okbg:#EAF6EF; --warn:#b8860b; --warnbg:#FFF8E1;
+  --mal:#b03030; --malbg:#FDEDED; --papel:#ffffff; --fondo:#EEECF7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+     color:var(--tinta);background:var(--fondo);padding:20px}
+.wrap{max-width:1500px;margin:0 auto}
+header{margin-bottom:16px}
+h1{font-size:22px;color:var(--azul)}
+.sub{color:var(--gris);font-size:13.5px;margin-top:4px}
+/* ---------- selector de recorrido ---------- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 10px}
+.tabs button{border:1.5px solid var(--borde);background:var(--papel);color:var(--tinta);
+  border-radius:999px;padding:9px 16px;font-size:13.5px;cursor:pointer;transition:.18s}
+.tabs button:hover{border-color:var(--lila);transform:translateY(-1px)}
+.tabs button.on{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600}
+.modo{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.modo span{font-size:12.5px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em}
+/* ---------- barra de la escena ---------- */
+.bar{background:var(--papel);border:1.5px solid var(--borde);border-radius:14px;
+     padding:14px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.bar .tit{font-weight:700;color:var(--azul);font-size:16px}
+.bar .meta{color:var(--gris);font-size:13px}
+.bar .sp{flex:1}
+.ctrl{display:flex;gap:8px;align-items:center}
+.ctrl button{border:1.5px solid var(--borde);background:var(--papel);border-radius:9px;
+  padding:8px 14px;cursor:pointer;font-size:13.5px;transition:.18s;color:var(--tinta)}
+.ctrl button:hover:not(:disabled){border-color:var(--lila);background:var(--claro)}
+.ctrl button.pri{background:var(--azul);border-color:var(--azul);color:#fff;font-weight:600}
+.ctrl button:disabled{opacity:.35;cursor:default}
+#audio.off{background:#fff;color:var(--gris);border-style:dashed}
+#audio.hablando{border-color:var(--lila);background:var(--claro);color:var(--azul);font-weight:600}
+.onda{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--lila);margin-right:5px;
+      animation:onda 1s infinite}
+@keyframes onda{0%,100%{transform:scale(.7);opacity:.45}50%{transform:scale(1.25);opacity:1}}
+.dots{display:flex;gap:6px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--borde);transition:.25s}
+.dots i.on{background:var(--lila);transform:scale(1.35)}
+.prog{height:4px;background:var(--borde);border-radius:4px;overflow:hidden;margin-top:12px}
+.prog b{display:block;height:100%;background:linear-gradient(90deg,var(--lila),var(--azul));
+        width:0;transition:width .45s cubic-bezier(.4,0,.2,1)}
+/* ---------- escena ---------- */
+.escena{display:grid;grid-template-columns:minmax(360px,520px) 1fr;gap:20px;margin-top:16px;align-items:start}
+.device{background:var(--papel);border:1.5px solid var(--borde);border-radius:18px;overflow:hidden;
+        box-shadow:0 8px 28px rgba(46,31,99,.10)}
+.device.mobile{max-width:400px;margin:0 auto}
+.chrome{background:var(--claro);padding:9px 14px;display:flex;justify-content:space-between;
+        font-size:12px;color:var(--gris);border-bottom:1px solid var(--borde)}
+.chrome b{color:var(--azul);font-weight:600}
+.scr{padding:16px;min-height:430px}
+.scr.anim{animation:entra .42s cubic-bezier(.22,.9,.3,1)}
+@keyframes entra{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+/* ---------- panel didáctico ---------- */
+.panel{background:var(--papel);border:1.5px solid var(--borde);border-radius:16px;padding:18px 20px}
+.panel h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--gris);
+          margin:16px 0 7px;font-weight:700}
+.panel h3:first-child{margin-top:0}
+.cuBox{background:linear-gradient(135deg,#f6f4fe,#eeebfb);border:1.5px solid #cfc8ea;
+       border-radius:13px;padding:14px 16px}
+.cuBox .cod{font-weight:700;color:var(--azul);font-size:15.5px}
+.cuBox .act{font-size:13px;color:var(--gris);margin-top:3px}
+.cuBox .paq{display:inline-block;margin-top:8px;font-size:11.5px;background:#fff;border:1px solid #cfc8ea;
+            color:var(--lila);border-radius:999px;padding:3px 10px}
+.lead{font-size:14.5px;line-height:1.62}
+.lead em{font-style:normal;background:#fff7d6;border-bottom:2px solid #e3c75a;padding:0 2px;border-radius:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11.5px;border:1px solid var(--borde);background:var(--claro);color:var(--azul);
+      border-radius:999px;padding:4px 10px;font-weight:600}
+.chip.rn{background:#FFF8E1;border-color:#e3c75a;color:#6b5312}
+.chip.ev{background:var(--okbg);border-color:#9ccfb4;color:#1e5c3a}
+.obs{font-size:13.5px;color:var(--gris);line-height:1.6;border-left:3px solid var(--borde);padding-left:12px}
+/* ---------- guía paso a paso ---------- */
+.guia{margin-top:14px;background:#FFFDF2;border:1.5px solid #e3c75a;border-radius:13px;padding:13px 15px;
+      display:none}
+.guia.on{display:block;animation:entra .3s}
+.guia .n{font-size:11.5px;color:#8a6d16;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.guia p{margin-top:5px;font-size:14px;color:#5c4a12;line-height:1.55}
+[data-g]{transition:box-shadow .3s,transform .3s}
+[data-g].foco{box-shadow:0 0 0 3px #e3c75a,0 0 0 9px rgba(227,199,90,.25);border-radius:10px;
+              position:relative;z-index:2}
+/* ---------- piezas de pantalla ---------- */
+.card{border:1px solid var(--borde);border-radius:12px;padding:13px;margin-bottom:11px;background:#fff}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:4px 0;font-size:13.5px}
+.row.tot{border-top:1px solid var(--borde);margin-top:6px;padding-top:9px;font-weight:700}
+.btn{background:var(--azul);color:#fff;border-radius:10px;padding:11px;text-align:center;
+     font-weight:600;font-size:14px;margin-bottom:9px;cursor:default}
+.btn.sec{background:#fff;color:var(--tinta);border:1.5px solid var(--borde)}
+.fld{border:1.5px solid var(--borde);border-radius:9px;padding:10px 12px;color:#9b9ba3;
+     font-size:13.5px;margin-bottom:9px;background:#fafafc}
+.pill{font-size:11.5px;border:1px solid var(--borde);background:var(--claro);color:var(--azul);
+      border-radius:999px;padding:3px 9px;font-weight:600;white-space:nowrap}
+.pill.g{background:var(--okbg);border-color:#9ccfb4;color:#1e5c3a}
+.pill.w{background:var(--warnbg);border-color:#e3c75a;color:#6b5312}
+.pill.r{background:var(--malbg);border-color:#e0a0a0;color:var(--mal)}
+.hint{font-size:12.5px;color:var(--gris);margin-top:6px;line-height:1.5}
+.off{background:var(--claro);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;
+     font-size:12.5px;color:var(--azul);margin:9px 0;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--azul);color:#fff;text-align:left;padding:8px 9px;font-weight:600;font-size:12px}
+td{padding:8px 9px;border-bottom:1px solid #eeedf5}
+tr:last-child td{border-bottom:none}
+.side{display:flex;gap:14px}
+.menu{width:138px;border-right:1px solid var(--borde);padding-right:10px;font-size:13px;color:var(--gris)}
+.menu div{padding:7px 4px;border-radius:7px}
+.menu .on{color:var(--azul);font-weight:700;background:var(--claro)}
+.qr{width:74px;height:74px;border:1.5px solid var(--borde);border-radius:9px;background:var(--claro);
+    display:flex;align-items:center;justify-content:center;color:var(--gris);font-weight:700;margin:8px auto}
+.verdict{border-radius:11px;padding:13px;text-align:center;font-weight:700;margin-bottom:11px;font-size:15px}
+.verdict.ok{background:var(--okbg);color:var(--ok);border:1.5px solid #9ccfb4}
+.verdict.no{background:var(--malbg);color:var(--mal);border:1.5px solid #e0a0a0}
+.cuenta{display:flex;align-items:center;gap:9px;background:var(--warnbg);border:1.5px solid #e3c75a;
+        border-radius:10px;padding:9px 12px;margin-bottom:11px;font-size:13.5px;color:#6b5312}
+.cuenta b{font-variant-numeric:tabular-nums;font-size:16px}
+.reloj{width:11px;height:11px;border:2px solid #b8860b;border-radius:50%;animation:late 1.1s infinite}
+@keyframes late{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.28);opacity:.55}}
+.tick{width:58px;height:58px;border-radius:50%;border:4px solid var(--ok);margin:4px auto 10px;
+      display:flex;align-items:center;justify-content:center;color:var(--ok);font-size:30px;
+      animation:pop .5s cubic-bezier(.3,1.4,.5,1)}
+@keyframes pop{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+.barra{height:6px;background:var(--borde);border-radius:6px;overflow:hidden;margin:7px 0}
+.barra b{display:block;height:100%;background:var(--lila);width:0;animation:llena 1.1s .15s forwards}
+@keyframes llena{to{width:var(--w,60%)}}
+footer{margin-top:20px;font-size:12px;color:var(--gris);line-height:1.6;border-top:1px solid var(--borde);
+       padding-top:14px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:1040px){.escena{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Prototipo navegable didáctico · Ticketera VAOPE</h1>
+  <div class="sub">VAOPE · Expediente 8.0 · Línea base académica v2.4 · 16 pantallas · 19 casos de uso · Grupo 5, UNFV</div>
+</header>
+<div class="modo"><span>Recorrer por</span></div>
+<div class="tabs" id="modos"></div>
+<div class="tabs" id="rutas"></div>
+<div class="bar">
+  <div>
+    <div class="tit" id="tit">—</div>
+    <div class="meta" id="meta">—</div>
+  </div>
+  <div class="sp"></div>
+  <div class="dots" id="dots"></div>
+  <div class="ctrl">
+    <button id="ant">◀ Anterior</button>
+    <button id="play" class="pri">▶ Reproducir</button>
+    <button id="sig" class="pri">Siguiente ▶</button>
+    <button id="audio" title="Silenciar o activar la narración">🔊 Audio</button>
+  </div>
+  <div style="flex-basis:100%"><div class="prog"><b id="prog"></b></div></div>
+</div>
+<div class="escena">
+  <div>
+    <div class="device" id="dev">
+      <div class="chrome"><span id="chL"></span><span id="chR"></span></div>
+      <div class="scr" id="scr"></div>
+    </div>
+    <div class="guia" id="guia"><div class="n" id="guiaN"></div><p id="guiaT"></p></div>
+  </div>
+  <div class="panel">
+    <h3>Caso de uso que interviene</h3>
+    <div id="cuBox"></div>
+    <h3>Qué ocurre en esta pantalla</h3>
+    <div class="lead" id="lead"></div>
+    <h3>Reglas de negocio que la gobiernan</h3>
+    <div class="chips" id="rn"></div>
+    <h3>Requerimientos y evidencia</h3>
+    <div class="chips" id="ev"></div>
+    <h3>Qué observar en la sesión de validación</h3>
+    <div class="obs" id="obs"></div>
+  </div>
+</div>
+<footer id="pie"></footer>
+</div>
+<script>
+/* ============ catálogo de casos de uso de la línea base v2.4 ============ */
+const CU={
+ 'CU-01':['Registrar usuario','Comprador','Gestión de usuarios'],
+ 'CU-02':['Iniciar y cerrar sesión','Comprador','Gestión de usuarios'],
+ 'CU-03':['Recuperar contraseña','Comprador','Gestión de usuarios'],
+ 'CU-04':['Gestionar perfil e historial','Comprador','Gestión de usuarios'],
+ 'CU-05':['Registrar evento','Organizador validado','Gestión de eventos'],
+ 'CU-06':['Modificar o desactivar evento','Organizador / Administrador','Gestión de eventos'],
+ 'CU-07':['Consultar y filtrar eventos','Visitante o comprador','Gestión de eventos'],
+ 'CU-08':['Configurar zonas y precios','Organizador validado','Gestión de entradas'],
+ 'CU-09':['Consultar disponibilidad','Comprador','Gestión de entradas'],
+ 'CU-10':['Reservar entradas temporalmente','Comprador','Gestión de entradas'],
+ 'CU-11':['Comprar entradas','Comprador autenticado','Gestión de entradas'],
+ 'CU-12':['Validar ticket electrónico','Personal de acceso','Gestión de entradas'],
+ 'CU-13':['Procesar pago','Comprador','Gestión de pagos'],
+ 'CU-14':['Gestionar devolución','Agente de soporte','Gestión de pagos'],
+ 'CU-15':['Gestionar promociones','Organizador validado','Gestión de promociones'],
+ 'CU-16':['Aplicar código promocional','Comprador','Gestión de promociones'],
+ 'CU-17':['Registrar consulta o reclamo','Consumidor con o sin cuenta','Atención de soporte'],
+ 'CU-18':['Atender y responder el caso','Agente de soporte','Atención de soporte'],
+ 'CU-19':['Validar organizador','Administrador de la plataforma','Gestión de eventos']};
+
+/* ============ pantallas ============ */
+const S={
+C10:{dev:'mobile',url:'vaope.com/registro',rol:'Visitante',t:'Crear cuenta',
+ cu:['CU-01'],rn:['RN-02 mayoría de edad','RN-10 correo y documento únicos'],
+ ev:['RF01','CP-04','BD-01 · BD-02 · BD-03'],
+ lead:'El visitante crea su cuenta. El sistema <em>no la activa</em> hasta que el correo de verificación se confirma: esa confirmación es la relación «include» que la ficha de CU-01 declara obligatoria.',
+ obs:'Si el visitante advierte que la cuenta queda pendiente de verificación y si entiende por qué se le pide el documento.',
+ pasos:[['Datos de la cuenta','El correo y el documento deben ser únicos en toda la plataforma: la base rechaza el duplicado antes de crear la cuenta (RN-10, pruebas BD-01 y BD-02).'],
+        ['Fecha de nacimiento','Solo se registran mayores de edad. La comprobación se hace en el servidor, no en el navegador (RN-02, prueba BD-03).'],
+        ['Aviso de verificación','La cuenta existe pero no está activa. Sin confirmar el correo no puede comprar: ese es el paso «include» de CU-01.']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Crear una cuenta</strong></div>
+   <div class="fld">Nombres y apellidos</div>
+   <div class="fld">ana.****@correo.com</div>
+   <div class="fld">Documento de identidad · 7**4**2</div></div>
+  <div class="card" data-g="1"><div class="row"><span>Fecha de nacimiento</span><span>14/03/1995</span></div>
+   <div class="hint">Debe ser mayor de edad para completar el registro (RN-02).</div></div>
+  <div class="btn">Crear cuenta</div>
+  <div class="off" data-g="2">Te enviamos un enlace de verificación a tu correo. <strong>La cuenta queda pendiente</strong>
+   hasta que lo confirmes: sin ese paso no es posible comprar (CU-01, RF01).</div>`},
+
+C11:{dev:'mobile',url:'vaope.com/acceso',rol:'Visitante',t:'Acceso y recuperación',
+ cu:['CU-02','CU-03'],rn:['RN-11 sesión y bloqueo','RN-12 enlace de un solo uso'],
+ ev:['RF02 · RF03 · RF04','CP-09 · CP-10'],
+ lead:'Dos casos de uso conviven en la misma pantalla. CU-02 inicia y cierra sesión; CU-03 recupera la contraseña y es <em>independiente</em>: el comprador puede iniciarlo sin haber intentado antes entrar.',
+ obs:'Si el usuario encuentra la recuperación sin ayuda y si comprende el mensaje de bloqueo temporal.',
+ pasos:[['Inicio de sesión · CU-02','Tras varios intentos fallidos la cuenta se bloquea de forma temporal, para contener los intentos automatizados (RN-11).'],
+        ['Punto de extensión «credencial olvidada»','Desde aquí se alcanza CU-03, pero el enlace no es la única entrada: CU-03 también se inicia por sí solo desde la pantalla pública.'],
+        ['Enlace de recuperación · CU-03','El enlace caduca y sirve una sola vez. Usarlo dos veces no restablece la contraseña (RN-12, prueba BD-04).']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Iniciar sesión</strong><span class="pill">CU-02</span></div>
+   <div class="fld">Correo electrónico</div><div class="fld">Contraseña</div>
+   <div class="btn">Entrar</div>
+   <div class="hint">Tras 5 intentos fallidos la cuenta se bloquea 15 minutos (RN-11).</div></div>
+  <div class="off" data-g="1">¿Olvidaste tu contraseña? <strong>Recuperarla</strong>
+   <div class="hint">Punto de extensión «credencial olvidada» de CU-02 hacia CU-03.</div></div>
+  <div class="card" data-g="2"><div class="row"><strong>Recuperar contraseña</strong><span class="pill">CU-03</span></div>
+   <div class="fld">Correo de la cuenta</div><div class="btn sec">Enviar enlace</div>
+   <div class="hint">El enlace caduca y es de un solo uso (RN-12).</div></div>`},
+
+C12:{dev:'mobile',url:'vaope.com/mi-perfil',rol:'Comprador',t:'Mis datos',
+ cu:['CU-04'],rn:['RN-10 unicidad de correo y documento'],
+ ev:['RF05','QA-RF05'],
+ lead:'Primer subflujo de CU-04: actualizar los datos personales. Cambiar el correo <em>vuelve a exigir verificación</em>, porque el correo identifica la cuenta.',
+ obs:'Si entiende que el cambio de correo deja la cuenta pendiente otra vez y si encuentra el historial desde aquí.',
+ pasos:[['Datos editables','El documento no se edita libremente: identifica al comprador frente al límite por función (RN-01) y al Libro de Reclamaciones.'],
+        ['Cambio de correo','Un correo nuevo exige una verificación nueva. Mientras tanto la sesión sigue activa pero el correo anterior continúa siendo el de contacto (RN-10).'],
+        ['Acceso al historial','El historial de compras es el subflujo SF-2 de CU-04 y se abre en la pantalla «Mis compras».']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Mis datos</strong><span class="pill">CU-04</span></div>
+   <div class="row"><span>Nombres</span><span>Ana M. Quispe</span></div>
+   <div class="row"><span>Documento</span><span>7**4**2</span></div>
+   <div class="hint">El documento no se modifica desde la aplicación.</div></div>
+  <div class="card" data-g="1"><div class="row"><span>Correo</span><span>ana.****@correo.com</span></div>
+   <div class="btn sec">Cambiar correo</div>
+   <div class="hint">Al cambiarlo, la cuenta vuelve a quedar pendiente de verificación (RN-10).</div></div>
+  <div class="btn sec" data-g="2">Ver mis compras y mis entradas</div>`},
+
+C1:{dev:'mobile',url:'vaope.com',rol:'Visitante o comprador',t:'Catálogo de eventos',
+ cu:['CU-07'],rn:['RN-15 solo eventos publicados y vigentes'],
+ ev:['RF10 · RF11 · RF12','CP-14'],
+ lead:'El catálogo es público: <em>no exige cuenta</em>. Solo muestra eventos publicados y con función vigente; un evento desactivado o pasado no aparece aunque se conozca su enlace.',
+ obs:'Si el visitante filtra sin ayuda y si comprende por qué un evento agotado sigue visible pero sin opción de compra.',
+ pasos:[['Filtros del catálogo','Categoría, ciudad y fecha. El filtro es parte de CU-07 y no un caso de uso aparte (RF11).'],
+        ['Evento disponible','Solo se listan los eventos publicados por un organizador validado y con función futura (RN-15, RN-23).'],
+        ['Evento agotado','Permanece visible para informar, pero sin acción de compra: la disponibilidad se consulta en CU-09.']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Buscar eventos</strong></div>
+   <div class="fld">Nombre del evento o artista</div>
+   <div class="row"><span class="pill">Conciertos</span><span class="pill">Lima</span><span class="pill">Dic 2026</span></div></div>
+  <div class="card" data-g="1"><div class="row"><strong>Festival de Cumbia 2026</strong><span class="pill g">Disponible</span></div>
+   <div class="row"><span>Sáb 12 dic · 20:00 h · Estadio Nacional</span><span>Desde S/ 55</span></div>
+   <div class="btn sec">Ver detalle</div></div>
+  <div class="card" data-g="2"><div class="row"><strong>Noche de Salsa</strong><span class="pill r">Agotado</span></div>
+   <div class="row"><span>Vie 18 dic · 21:00 h · Gran Teatro</span><span>—</span></div>
+   <div class="hint">Se mantiene visible para informar; no admite compra (RN-15).</div></div>`},
+
+C2:{dev:'mobile',url:'vaope.com/evento/142',rol:'Visitante o comprador',t:'Detalle del evento y zonas',
+ cu:['CU-07','CU-09'],rn:['RN-03 reserva de diez minutos','RN-14 aforo por zona','RN-15 vigencia'],
+ ev:['RF12 · RF17','CP-16'],
+ lead:'Aquí convergen dos casos de uso: CU-07 muestra el detalle y CU-09 calcula la disponibilidad. El número que ve el comprador <em>descuenta las reservas vigentes de otros</em>, no solo las ventas.',
+ obs:'Si entiende que «quedan 12» puede bajar mientras decide y si distingue el precio de preventa del regular.',
+ pasos:[['Datos de la función','La función identifica fecha, hora y recinto. El aforo y el límite por comprador se definen por función, no por evento (RF39, RN-01).'],
+        ['Disponibilidad por zona · CU-09','La cifra resta las entradas vendidas y las reservas vigentes que aún no han expirado (RN-03, prueba BD-21).'],
+        ['Aviso de últimas entradas','El umbral del aviso está fijado provisionalmente en el 10 % del aforo y es una de las confirmaciones pendientes del negocio (punto P-08).']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Festival de Cumbia 2026</strong><span class="pill g">Publicado</span></div>
+   <div class="row"><span>Función: sáb 12 dic · 20:00 h</span><span>Estadio Nacional, Lima</span></div>
+   <div class="hint">Límite de 4 entradas por comprador en esta función (RF39, RN-01).</div></div>
+  <div class="card" data-g="1"><div class="row"><strong>Zonas</strong><span class="pill">CU-09</span></div>
+   <div class="row"><span>VIP · S/ 180</span><span><b>12</b> disponibles</span></div>
+   <div class="barra" style="--w:94%"><b></b></div>
+   <div class="row"><span>Platea · S/ 120</span><span><b>143</b> disponibles</span></div>
+   <div class="barra" style="--w:76%"><b></b></div>
+   <div class="row"><span>General · S/ 55</span><span>Agotada</span></div></div>
+  <div class="off" data-g="2">Últimas entradas en VIP. El cálculo descuenta las ventas <strong>y las reservas vigentes</strong> de otros compradores (RN-03).</div>
+  <div class="btn">Elegir zona y cantidad</div>`}
+};
+
+Object.assign(S,{
+C3:{dev:'mobile',url:'vaope.com/reserva',rol:'Comprador',t:'Resumen de compra',
+ cu:['CU-10','CU-16'],rn:['RN-01 límite por función','RN-03 diez minutos','RN-07 y RN-17 promociones'],
+ ev:['RF18 · RF33','CP-01 · CP-07 · CP-21'],
+ lead:'La reserva bloquea las entradas durante <em>diez minutos</em> y el contador lo hace visible. CU-16 extiende la compra: el código promocional es opcional y la compra es válida sin él.',
+ obs:'Si percibe el contador, si entiende el descuento aplicado y si comprueba el total antes de pagar.',
+ pasos:[['Contador de la reserva','Hallazgo de la simulación: el comprador no sabía cuánto tiempo tenía. Al llegar a cero las entradas vuelven al cupo disponible (RN-03).'],
+        ['Límite por comprador','El control suma las compras previas y las reservas vigentes del mismo comprador en esta función: no es un límite por transacción (RN-01, prueba BD-21).'],
+        ['Código promocional · CU-16','Punto de extensión «código promocional» sobre CU-11. El cupo de la promoción y los usos por comprador se verifican al aplicarlo (RN-17, prueba BD-11).']],
+ body:`<div class="cuenta" data-g="0"><span class="reloj"></span>Tus entradas están reservadas por <b id="reloj">09:41</b></div>
+  <div class="card" data-g="1"><div class="row"><strong>Festival de Cumbia 2026 · VIP</strong><span class="pill">2 entradas</span></div>
+   <div class="row"><span>Sáb 12 dic · 20:00 h</span><span>S/ 180.00 c/u</span></div>
+   <div class="hint">Máximo 4 entradas por comprador en esta función; ya tienes 0 compradas (RN-01).</div></div>
+  <div class="card" data-g="2"><div class="row"><strong>Código promocional</strong><span class="pill">CU-16</span></div>
+   <div class="row"><span>PREVENTA20 aplicado</span><span class="pill g">−20 %</span></div>
+   <div class="row"><span>Subtotal</span><span>S/ 360.00</span></div>
+   <div class="row"><span>Descuento</span><span>− S/ 72.00</span></div>
+   <div class="row tot"><span>Total a pagar</span><span>S/ 288.00</span></div>
+   <div class="hint">Quedan 1 de 2 usos del cupo promocional (RN-17).</div></div>
+  <div class="btn">Ir a pagar</div>`},
+
+C4:{dev:'mobile',url:'vaope.com/pago',rol:'Comprador',t:'Medio de pago y verificación',
+ cu:['CU-13'],rn:['RN-05 medios habilitados','RN-06 sin pago no hay ticket','RN-20 idempotencia'],
+ ev:['RF23 · RF24 · RF25 · RF26 · RF27','CP-02 · CP-05 · BD-19'],
+ lead:'El cobro lo autoriza una pasarela externa. Si no responde dentro del tiempo límite, la transacción queda <em>«en verificación»</em>: no se emite ticket ni se descuenta inventario.',
+ obs:'Si comprende el motivo de un rechazo, si intenta pagar de nuevo y si entiende que el reintento no genera un segundo cobro.',
+ pasos:[['Medios habilitados','Solo se ofrecen los medios que el organizador habilitó para ese evento (RN-05).'],
+        ['Autenticación adicional','La verificación 3-D Secure es un punto de extensión de CU-13: ocurre solo si la pasarela la solicita (RF24).'],
+        ['Idempotencia del cobro','Cada operación lleva una clave externa única. Reintentar no genera una segunda compra, ni un segundo ticket, ni un segundo movimiento de inventario (RN-20, prueba BD-19).']],
+ body:`<div class="card" data-g="0"><div class="row"><strong>Medio de pago</strong></div>
+   <div class="row"><span class="pill">Tarjeta</span><span class="pill">Yape</span><span class="pill">Transferencia</span></div>
+   <div class="hint">Solo los medios habilitados por el organizador para este evento (RN-05).</div></div>
+  <div class="card" data-g="1"><div class="row"><strong>Verificación del banco</strong><span class="pill w">3-D Secure</span></div>
+   <div class="fld">Código enviado a tu teléfono</div>
+   <div class="hint">Paso adicional solicitado por la pasarela (RF24).</div></div>
+  <div class="card"><div class="row"><span>Total autorizado</span><span><strong>S/ 288.00</strong></span></div>
+   <div class="row"><span>Operación</span><span>OP-2026-118244</span></div></div>
+  <div class="off" data-g="2">Si la pasarela no responde, la transacción queda <strong>«en verificación»</strong>:
+   no se emite ticket ni se descuenta el cupo. Reintentar no genera un segundo cobro (RN-06, RN-20).</div>
+  <div class="btn">Pagar S/ 288.00</div>`},
+
+C5:{dev:'mobile',url:'vaope.com/confirmacion',rol:'Comprador',t:'Compra confirmada',
+ cu:['CU-11'],rn:['RN-06 emisión condicionada al pago','RN-08 QR único','RN-20 idempotencia'],
+ ev:['RF19 · RF20 · RF21','CP-22 · BD-19'],
+ lead:'Una sola operación y <em>dos boletos con identificador propio</em>. Repetir la confirmación del pago conserva la misma operación y los mismos dos boletos: no genera una segunda compra.',
+ obs:'Si entiende que cada entrada tiene su propio código, si distingue los dos boletos y si encuentra el reenvío.',
+ pasos:[['Un QR por entrada','No se emite un código por compra sino uno por entrada, para que cada asistente ingrese de forma independiente (RN-08).'],
+        ['Dos boletos, una operación','TK-9F42-1187 y TK-9F42-1188 pertenecen a OP-2026-118244. Es el escenario CP-22: la confirmación repetida no duplica la compra (RN-20).'],
+        ['Doble canal de entrega','El ticket queda en la aplicación y se envía por correo, para no depender de un solo medio el día del evento (RF20, RF21).']],
+ body:`<div class="tick">✓</div>
+  <div style="text-align:center;font-weight:700;font-size:16px">¡Tu compra fue confirmada!</div>
+  <div class="hint" style="text-align:center">Operación OP-2026-118244 · 12 dic 2026</div>
+  <div class="card" style="margin-top:12px"><div class="row"><strong>Festival de Cumbia 2026 · VIP</strong><span>2 entradas</span></div>
+   <div class="row tot"><span>Total pagado</span><span>S/ 288.00</span></div></div>
+  <div class="card" data-g="0"><div class="qr">QR</div>
+   <div class="row" style="justify-content:center"><strong>Entrada 1 de 2 · TK-9F42-1187</strong></div>
+   <div class="hint" style="text-align:center">Platea · válido para un solo ingreso</div></div>
+  <div class="card" data-g="1"><div class="qr">QR</div>
+   <div class="row" style="justify-content:center"><strong>Entrada 2 de 2 · TK-9F42-1188</strong></div>
+   <div class="hint" style="text-align:center">Platea · válido para un solo ingreso</div></div>
+  <div class="off" data-g="2">Enviamos cada entrada al correo registrado. Repetir la confirmación conserva
+   <strong>la misma operación y los mismos dos boletos</strong> (RN-20, CP-22).</div>`},
+
+C6:{dev:'mobile',url:'vaope.com/mis-compras',rol:'Comprador',t:'Mis compras',
+ cu:['CU-04','CU-14'],rn:['RN-09 efecto de la devolución','RN-22 anulación condicionada'],
+ ev:['RF06 · RF21 · RF28','CP-11 variantes A y B · BD-27'],
+ lead:'La misma pantalla muestra las <em>dos variantes del escenario CP-11</em>: una devolución que revierte la compra y anula el boleto, y otra que solo restituye un cargo duplicado y deja la entrada vigente.',
+ obs:'Si distingue el estado de cada compra y si entiende que el boleto sigue vigente mientras el reembolso no se confirme.',
+ pasos:[['Devolución en trámite','El boleto se anula y el cupo se libera solo cuando la pasarela confirma el reembolso, nunca antes (RN-22).'],
+        ['Variante A · compra revertida','Cancelación del evento: reembolso del cargo original confirmado y boleto anulado, que deja de mostrar su código QR.'],
+        ['Variante B · cargo excedente','Cobro duplicado: se devuelve solo el sobrante. El boleto conserva su QR y el cupo sigue vendido. El agente concilia esta misma devolución en C14.']],
+ body:`<div class="card"><div class="row"><strong>Festival de Cumbia 2026</strong><span class="pill g">Emitida</span></div>
+   <div class="row"><span>Sáb 12 dic · VIP · 2 entradas</span><span>S/ 288.00</span></div>
+   <div class="hint">Boletos TK-9F42-1187 y TK-9F42-1188 · ambos con código QR</div></div>
+  <div class="card" data-g="0"><div class="row"><strong>Concierto de Año Nuevo</strong><span class="pill w">Devolución en trámite</span></div>
+   <div class="row"><span>Evento cancelado · reembolso enviado a la pasarela</span></div>
+   <div class="hint">El boleto se anula y el cupo se libera cuando la pasarela confirme el reembolso (RN-22).</div></div>
+  <div class="card" data-g="1"><div class="row"><strong>Festival de Invierno</strong><span class="pill r">Anulada</span></div>
+   <div class="row"><span><strong>Compra revertida por cancelación. Reembolso del cargo original confirmado. Boleto anulado.</strong></span></div>
+   <div class="hint">Boleto TK-7C10-0455 · sin código QR desde el 02 dic · cargo devuelto OP-0019
+   <br>Variante A de CP-11.</div></div>
+  <div class="card" data-g="2"><div class="row"><strong>Noche de Salsa</strong><span class="pill g">Emitida</span></div>
+   <div class="row"><span>Se le cobró dos veces: devolvimos el cargo excedente</span><span class="pill g">S/ 120.00</span></div>
+   <div class="row"><span>Cargo devuelto: OP-0028</span><span>Cargo vigente: OP-0027</span></div>
+   <div class="hint">Boleto TK-4B81-0092 · código QR vigente · cupo vendido<br>Variante B de CP-11 (RN-22).</div></div>`},
+
+C7:{dev:'mobile',url:'Validación en puerta',rol:'Personal de acceso',t:'Validación de ingreso',
+ cu:['CU-12'],rn:['RN-08 un solo uso','RN-19 lectura sin conexión'],
+ ev:['RF22','CP-03 · CP-19 · BD-21'],
+ lead:'El veredicto debe leerse a un metro de distancia y con poca luz. Sin conexión el dispositivo valida contra una lista descargada: eso <em>detecta</em> el doble uso, no lo impide físicamente.',
+ obs:'Si el veredicto se lee a distancia, si encuentra el ingreso manual y si entiende el alcance del modo sin conexión.',
+ pasos:[['Modo sin conexión','La lista autorizada se descarga antes del evento y los marcajes se sincronizan después. Es un punto de extensión de CU-12, no un caso de uso propio (RN-19).'],
+        ['Veredicto de ingreso','Un ticket pasa de emitido a utilizado una sola vez. El segundo escaneo conectado se rechaza (RN-08, prueba BD-21).'],
+        ['Ingreso manual','Cuando el código QR resulta ilegible, el operador ingresa el código a mano: segundo punto de extensión de CU-12.']],
+ body:`<div class="off" data-g="0">⚠ Sin conexión · validando contra la lista descargada a las 18:30 · 42 marcajes por sincronizar</div>
+  <div class="verdict no" data-g="1">Ingreso rechazado</div>
+  <div class="card"><div class="row"><span>Código</span><span>TK-9F42-1187</span></div>
+   <div class="row"><span>Motivo</span><span>Ya utilizado</span></div>
+   <div class="row"><span>Ingreso anterior</span><span>19:05 · Puerta 3</span></div></div>
+  <div class="btn">Escanear siguiente</div>
+  <div class="btn sec" data-g="2">Ingresar el código a mano</div>
+  <div class="hint">Zona VIP · 188 de 200 validados. La validación sin conexión permite detectar el doble uso al sincronizar; no lo impide en la puerta (RN-19).</div>`}
+});
+
+Object.assign(S,{
+C15:{dev:'desktop',url:'vaope.com/admin',rol:'Administrador de la plataforma',t:'Validación del organizador',
+ cu:['CU-19'],rn:['RN-23 sin validación no hay publicación'],
+ ev:['RF38','CP-20 · BD-05'],
+ lead:'El administrador aprueba, observa o rechaza la solicitud. <em>No fija el límite por comprador</em>: ese dato se muestra aquí solo para consultar lo que el organizador ya configuró en su propio panel.',
+ obs:'Si comprende que el organizador no puede publicar sin validación y si distingue quién resuelve la validación de quién configura el límite.',
+ pasos:[['Decisión del administrador','Aprobar, observar o rechazar registra responsable, fecha, estado anterior y motivo. Es el objetivo propio de CU-19 (RF38).'],
+        ['Bloqueo de publicación','Un organizador pendiente, observado o rechazado no puede publicar eventos. La comprobación está en la base, no solo en la interfaz (RN-23, prueba BD-05).'],
+        ['Límite por función · solo consulta','RF38 y RF39 son requerimientos distintos con actores distintos. El límite lo configura el organizador validado en C8; aquí solo se lee.']],
+ body:`<div class="side"><div class="menu"><div class="on">Solicitudes</div><div>Organizadores</div><div>Eventos</div><div>Auditoría</div></div>
+   <div style="flex:1">
+   <div class="card"><div class="row"><strong>ORG-0042 · Productora Dos S.A.C.</strong><span class="pill w">Pendiente</span></div>
+     <div class="row"><span>Ficha RUC</span><span class="pill g">✓ legible</span></div>
+     <div class="row"><span>Vigencia de poder</span><span class="pill g">✓ legible</span></div>
+     <div class="row"><span>Documento del representante</span><span class="pill r">✗ ilegible</span></div></div>
+   <div class="card" data-g="0"><div class="row"><strong>Decisión del administrador</strong></div>
+     <div class="row"><span class="pill">Aprobar</span><span class="pill">Observar</span><span class="pill">Rechazar</span></div>
+     <div class="fld">Motivo de la decisión</div>
+     <div class="hint">Queda registrada con su responsable, su fecha y el estado anterior.</div></div>
+   <div class="off" data-g="1">Mientras no esté validado <strong>no puede publicar eventos</strong> (RN-23).</div>
+   <div class="card" data-g="2"><div class="row"><strong>Límite por comprador</strong><span class="pill">Dato de consulta</span></div>
+     <table><tr><th>Función</th><th>Fecha y hora</th><th>Límite</th><th>Configurado por</th></tr>
+      <tr><td>F-01</td><td>12 dic 2026, 20:00 h</td><td><b>4</b></td><td>Organizador validado · panel C8</td></tr>
+      <tr><td>F-02</td><td>13 dic 2026, 20:00 h</td><td><b>6</b></td><td>Organizador validado · panel C8</td></tr></table>
+     <div class="hint">El administrador no configura este límite: solo lo consulta (RF39, RN-01).</div></div>
+   </div></div>`},
+
+C8:{dev:'desktop',url:'vaope.com/organizador',rol:'Organizador validado',t:'Panel del organizador',
+ cu:['CU-05','CU-08'],rn:['RN-01 límite por función','RN-14 aforo acumulado','RN-23 organizador validado'],
+ ev:['RF07 · RF13 · RF14 · RF15 · RF16 · RF39','CP-12 · CP-15 · CP-21 · BD-06'],
+ lead:'El organizador <em>ya validado</em> registra el evento y configura sus zonas. CU-05 incluye a CU-08: todo evento publicado define al menos una zona con aforo y precio.',
+ obs:'Si encuentra dónde fija el límite por comprador de una función concreta y si entiende la restricción de aforo.',
+ pasos:[['Sesión del organizador validado','La validación de CU-19 es la precondición de CU-05. Sin ella el panel no permite publicar (RN-23).'],
+        ['Límite por función · CU-05','Se identifica la función por fecha y hora. El límite rige por función y no por evento: cada función puede tener el suyo (RF39, RN-01).'],
+        ['Zonas y aforo · CU-08','La suma de los aforos de las zonas no puede superar la capacidad de la función. El control está en la base (RN-14, prueba BD-06).']],
+ body:`<div class="side"><div class="menu"><div>Mis eventos</div><div class="on">Nuevo evento</div><div class="on">Zonas y precios</div><div>Promociones</div><div>Ventas</div></div>
+   <div style="flex:1">
+   <div class="off" data-g="0"><strong>Sesión:</strong> Producciones Andinas S.A.C. · <span class="pill g">Validado por Administración</span></div>
+   <div class="card" data-g="1"><div class="row"><strong>Festival de Cumbia 2026</strong><span class="pill g">Publicado</span></div>
+     <table><tr><th>Función</th><th>Fecha y hora</th><th>Capacidad</th><th>Límite por comprador</th></tr>
+      <tr><td><b>F-01</b></td><td><b>12 de diciembre de 2026, 20:00 h</b></td><td>2 000</td><td><b>4 entradas</b></td></tr>
+      <tr><td>F-02</td><td>13 de diciembre de 2026, 20:00 h</td><td>2 000</td><td><b>6 entradas</b></td></tr></table>
+     <div class="hint">Lo configura el organizador validado y rige por función, no por evento (RF39, RN-01).</div></div>
+   <div class="card" data-g="2"><div class="row"><strong>Zonas de la función F-01</strong><span class="pill">CU-08</span></div>
+     <table><tr><th>Zona</th><th>Aforo</th><th>Preventa</th><th>Regular</th><th>Vendidas</th></tr>
+      <tr><td>VIP</td><td>200</td><td>S/ 160</td><td>S/ 180</td><td>188</td></tr>
+      <tr><td>Platea</td><td>600</td><td>S/ 100</td><td>S/ 120</td><td>457</td></tr>
+      <tr><td>General</td><td>1 200</td><td>S/ 38</td><td>S/ 55</td><td>1 200</td></tr></table>
+     <div class="hint" style="color:#1e7a4b;font-weight:600">Aforo asignado 2 000 de 2 000 · saldo 0</div>
+     <div class="off">La suma de aforos no puede superar la capacidad de la función (RN-14).</div></div>
+   </div></div>`},
+
+C16:{dev:'desktop',url:'vaope.com/organizador/promociones',rol:'Organizador validado',t:'Promociones del evento',
+ cu:['CU-15'],rn:['RN-07 un código por compra','RN-17 cupo y usos por comprador'],
+ ev:['RF29 · RF30 · RF31 · RF32','CP-17 · BD-11'],
+ lead:'Caso de uso propio del organizador: define el código, el tipo de descuento, la vigencia y el <em>cupo</em>. CU-16 lo consume después, durante la compra, como extensión de CU-11.',
+ obs:'Si distingue el cupo total de los usos por comprador y si entiende qué ocurre cuando el cupo se agota durante una compra.',
+ pasos:[['Alta de la promoción','Código único por evento, tipo de descuento y valor. Son RF29 y RF30 de CU-15 (prueba CP-17).'],
+        ['Vigencia y cupo','La vigencia delimita el periodo y el cupo total limita cuántas veces puede usarse. Una promoción fuera de vigencia no se aplica (RF31, RF32).'],
+        ['Consumo del cupo','El cupo y los usos por comprador se verifican al aplicar el código en la compra: agotado el cupo, el sistema rechaza la aplicación (RN-17, prueba BD-11).']],
+ body:`<div class="side"><div class="menu"><div>Mis eventos</div><div>Nuevo evento</div><div>Zonas y precios</div><div class="on">Promociones</div><div>Ventas</div></div>
+   <div style="flex:1">
+   <div class="card" data-g="0"><div class="row"><strong>Nueva promoción · Festival de Cumbia 2026</strong><span class="pill">CU-15</span></div>
+     <div class="row"><span>Código</span><span class="pill">PREVENTA20</span></div>
+     <div class="row"><span>Tipo de descuento</span><span>Porcentaje · 20 %</span></div>
+     <div class="hint">El código es único por evento (RF29).</div></div>
+   <div class="card" data-g="1"><div class="row"><strong>Vigencia y cupo</strong></div>
+     <div class="row"><span>Desde</span><span>01 de octubre de 2026</span></div>
+     <div class="row"><span>Hasta</span><span>19 de noviembre de 2026</span></div>
+     <div class="row"><span>Cupo total de usos</span><span><b>2</b></span></div>
+     <div class="row"><span>Usos por comprador</span><span><b>1</b></span></div>
+     <div class="hint">Fuera de vigencia la promoción no se aplica, aunque quede cupo (RF31, RF32).</div></div>
+   <div class="card" data-g="2"><div class="row"><strong>Promociones del evento</strong></div>
+     <table><tr><th>Código</th><th>Descuento</th><th>Vigencia</th><th>Cupo</th><th>Estado</th></tr>
+      <tr><td><b>PREVENTA20</b></td><td>20 %</td><td>01 oct – 19 nov</td><td>1 de 2 usados</td><td>Vigente</td></tr>
+      <tr><td>2X1CUMBIA</td><td>2 × 1</td><td>01 – 15 nov</td><td>40 de 40 usados</td><td>Cupo agotado</td></tr>
+      <tr><td>ESTUDIANTE</td><td>S/ 20</td><td>01 – 30 sep</td><td>12 de 50 usados</td><td>Fuera de vigencia</td></tr></table>
+     <div class="off">El cupo y los usos por comprador se comprueban al aplicar el código durante la compra (RN-17, prueba BD-11).</div></div>
+   </div></div>`},
+
+C13:{dev:'desktop',url:'vaope.com/organizador/evento/142',rol:'Organizador validado',t:'Modificar o desactivar un evento',
+ cu:['CU-06'],rn:['RN-13 no se elimina con ventas','RN-14 capacidad no reducible'],
+ ev:['RF08 · RF09','CP-13 · BD-04'],
+ lead:'Un evento con entradas vendidas <em>no se elimina</em>: solo se desactiva. Y la capacidad no puede bajar por debajo de lo ya vendido; ambas restricciones viven en la base de datos.',
+ obs:'Si entiende por qué el botón de eliminar está deshabilitado y si advierte a cuántos compradores alcanzará la notificación.',
+ pasos:[['Cambio con impacto','Modificar la fecha, la hora o la sede dispara la notificación a los compradores: es el punto de extensión «Notificar el cambio» de CU-06 (RF08).'],
+        ['Capacidad no reducible','La capacidad no baja por debajo de las entradas vendidas más las reservas vigentes (RN-14).'],
+        ['Eliminar o desactivar','Con ventas registradas la eliminación queda bloqueada y solo se ofrece desactivar, para conservar la trazabilidad de las compras (RN-13, prueba CP-13).']],
+ body:`<div class="side"><div class="menu"><div class="on">Mis eventos</div><div>Nuevo evento</div><div>Zonas y precios</div><div>Promociones</div><div>Ventas</div></div>
+   <div style="flex:1">
+   <div class="card" data-g="0"><div class="row"><strong>Festival de Cumbia 2026</strong><span class="pill g">Publicado</span></div>
+     <div class="row"><span>Fecha y hora</span><span>12 dic 2026 · 20:00 h</span></div>
+     <div class="row"><span>Sede</span><span>Estadio Nacional, Lima</span></div>
+     <div class="off">Cambiar fecha, hora o sede <strong>notifica a los 1 845 compradores</strong> con entradas vigentes (RF08).</div></div>
+   <div class="card" data-g="1"><div class="row"><span>Capacidad de la función</span><span>2 000</span></div>
+     <div class="row"><span>Vendidas + reservas vigentes</span><span>1 845</span></div>
+     <div class="hint">La capacidad no puede bajar de 1 845 (RN-14).</div></div>
+   <div class="card" data-g="2"><div class="row"><strong>Retirar el evento</strong></div>
+     <div class="row"><span class="pill r">Eliminar · no disponible</span><span class="pill">Desactivar</span></div>
+     <div class="hint">Un evento con entradas vendidas solo puede desactivarse, nunca eliminarse (RN-13, CP-13).</div></div>
+   </div></div>`}
+});
+
+Object.assign(S,{
+C9:{dev:'desktop',url:'vaope.com/soporte',rol:'Agente de soporte',t:'Bandeja de soporte',
+ cu:['CU-17','CU-18'],rn:['RN-18 plazo legal de quince días hábiles'],
+ ev:['RF34 · RF35 · RF36 · RF37','CP-08 · CP-18 · BD-25 · BD-26'],
+ lead:'El Libro de Reclamaciones admite registro <em>sin cuenta ni compra previa</em>. El plazo de respuesta es de quince días hábiles y el sistema lo computa y lo hace visible.',
+ obs:'Si distingue una consulta de un reclamo, si localiza el caso próximo a vencer y si entiende que el historial no se sobrescribe.',
+ pasos:[['Registro público · CU-17','Un visitante sin cuenta puede dejar un reclamo: la ley no condiciona el Libro de Reclamaciones a tener una compra (RF35, prueba BD-25).'],
+        ['Plazo legal · RN-18','Quince días hábiles improrrogables (Ley N.º 31435). El cómputo exacto exige el calendario oficial de feriados, que es una verificación pendiente (INT-05).'],
+        ['Atención del caso · CU-18','Cada respuesta se agrega al historial sin sobrescribir las anteriores, incluso si el caso se reabre (RN-18, prueba BD-26). Si hay causal aceptada, deriva a CU-14.']],
+ body:`<div class="side"><div class="menu"><div class="on">Bandeja</div><div>Mis casos</div><div>Vencimientos</div><div>Devoluciones</div></div>
+   <div style="flex:1">
+   <div class="card" data-g="0"><div class="row"><strong>Casos registrados</strong><span class="pill">CU-17</span></div>
+     <table><tr><th>Caso</th><th>Tipo</th><th>Origen</th><th>Motivo</th><th>Vence</th><th>Estado</th></tr>
+      <tr><td>REC-2026-0112</td><td>Reclamo</td><td><b>Sin cuenta</b></td><td>Cobro duplicado</td><td style="color:#b03030"><b>Hoy</b></td><td>En atención</td></tr>
+      <tr><td>CON-2026-0310</td><td>Consulta</td><td>Comprador</td><td>Reenvío de entrada</td><td>05 dic</td><td>Abierto</td></tr>
+      <tr><td>REC-2026-0108</td><td>Reclamo</td><td>Comprador</td><td>Evento cancelado</td><td>09 dic</td><td>Derivado a devolución</td></tr></table>
+     <div class="hint">El registro no exige cuenta ni compra previa (RF35).</div></div>
+   <div class="off" data-g="1">Plazo legal de <strong>15 días hábiles improrrogables</strong> (Ley N.º 31435).
+     El cómputo con el calendario oficial de feriados es una verificación pendiente (INT-05).</div>
+   <div class="card" data-g="2"><div class="row"><strong>REC-2026-0112 · historial</strong><span class="pill">CU-18</span></div>
+     <div class="row"><span>18 nov · Primera respuesta del agente</span><span class="pill">Conservada</span></div>
+     <div class="row"><span>19 nov · Caso reabierto por el consumidor</span><span class="pill w">Reapertura</span></div>
+     <div class="row"><span>20 nov · Segunda respuesta</span><span class="pill">Conservada</span></div>
+     <div class="hint">El historial no se sobrescribe al reabrir el caso (RN-18, prueba BD-26).</div>
+     <div class="btn sec">Derivar a devolución (CU-14)</div></div>
+   </div></div>`},
+
+C14:{dev:'desktop',url:'vaope.com/soporte/conciliacion',rol:'Agente de soporte',t:'Conciliación de cobros y devoluciones',
+ cu:['CU-14','CU-13'],rn:['RN-20 idempotencia y saldo reembolsable','RN-21 pago tardío','RN-22 anulación condicionada'],
+ ev:['RF26 · RF28','CP-06 · CP-11 · BD-27 · BD-30 · BD-33'],
+ lead:'El reverso de «Mis compras»: aquí el agente ve <em>cuál cargo se devolvió</em>. La misma operación que el comprador observa en C6 se concilia aquí desde el otro rol.',
+ obs:'Si distingue una transacción en verificación de un reintento duplicado y de un pago tardío, y si identifica por qué el boleto de «Noche de Salsa» sigue vigente.',
+ pasos:[['Reintento, no segundo cobro','OP-8843-PE aparece dos veces: la segunda es una notificación repetida de la pasarela, reconocida por su clave externa. No hubo un segundo cobro (RN-20).'],
+        ['Cobro duplicado · dos cargos reales','En «Noche de Salsa» sí hubo dos cargos. Se devolvió el excedente OP-0028 y el original OP-0027 sigue vigente: por eso el boleto conserva su QR (RN-22).'],
+        ['Saldo reembolsable','La suma de devoluciones no excede lo cobrado en el cargo ni el precio del boleto, al registrarlas y al modificarlas (RN-20, pruebas BD-30 y BD-33).']],
+ body:`<div class="side"><div class="menu"><div>Bandeja</div><div>Mis casos</div><div>Vencimientos</div><div class="on">Devoluciones</div></div>
+   <div style="flex:1">
+   <div class="card" data-g="0"><div class="row"><strong>Transacciones por conciliar</strong></div>
+     <table><tr><th>Operación</th><th>Importe</th><th>Estado</th><th>Situación</th></tr>
+      <tr><td>OP-8843-PE</td><td>S/ 45.00</td><td style="color:#b8860b"><b>En verificación</b></td><td>La pasarela no respondió dentro del tiempo límite</td></tr>
+      <tr style="background:#f4f3f9"><td>OP-8843-PE</td><td>S/ 45.00</td><td><b>Duplicada</b></td><td>Misma clave de idempotencia: reintento, no un segundo cobro</td></tr>
+      <tr><td>OP-8844-PE</td><td>S/ 120.00</td><td style="color:#b03030"><b>Aprobada tardía</b></td><td>Llegó después de vencida la reserva: no se emitieron tickets</td></tr>
+      <tr><td><b>OP-0027</b></td><td>S/ 120.00</td><td style="color:#1e7a4b"><b>Vigente</b></td><td>«Noche de Salsa» · cargo original · sustenta TK-4B81-0092</td></tr>
+      <tr><td><b>OP-0028</b></td><td>S/ 120.00</td><td style="color:#1e7a4b"><b>Reembolsada</b></td><td>«Noche de Salsa» · cargo excedente devuelto el 21 nov</td></tr></table></div>
+   <div class="card" data-g="1" style="background:#EAF6EF;border-color:#9ccfb4">
+     <div class="row"><strong>«Noche de Salsa» · resultado</strong><span class="pill g">Entrada vigente</span></div>
+     <div class="row"><span>Cobrado (OP-0027 + OP-0028)</span><span>S/ 240.00</span></div>
+     <div class="row"><span>Devuelto (OP-0028, excedente)</span><span>S/ 120.00</span></div>
+     <div class="row tot"><span>Saldo neto cobrado</span><span>S/ 120.00</span></div>
+     <div class="hint">El boleto TK-4B81-0092 conserva su QR y el cupo sigue vendido. El comprador ve esta misma devolución en «Mis compras» (RN-22, prueba BD-27).</div></div>
+   <div class="off" data-g="2">Al registrar o modificar una devolución, la suma no puede exceder lo cobrado en el cargo
+     ni el precio del boleto (RN-20, pruebas BD-30 y BD-33).</div>
+   <div class="btn sec">Generar devolución (CU-14)</div>
+   </div></div>`}
+});
+
+/* ============ recorridos ============ */
+const FLUJOS=[
+ {n:'Acceso a la plataforma',a:'Comprador',s:['C10','C11','C12'],
+  m:'CU-01, CU-02, CU-03 y CU-04 · cómo nace y se recupera una cuenta'},
+ {n:'Compra de entradas',a:'Comprador',s:['C1','C2','C3','C4','C5'],
+  m:'CU-07, CU-09, CU-10, CU-16, CU-13 y CU-11 · el camino principal de extremo a extremo'},
+ {n:'Posventa y devoluciones',a:'Comprador y agente de soporte',s:['C6','C9','C14'],
+  m:'CU-04, CU-14, CU-17 y CU-18 · la misma devolución vista por los dos roles'},
+ {n:'Ingreso al evento',a:'Personal de acceso',s:['C7'],
+  m:'CU-12 · validación con y sin conexión'},
+ {n:'Gestión del organizador',a:'Administrador y organizador',s:['C15','C8','C16','C13'],
+  m:'CU-19, CU-05, CU-08, CU-15 y CU-06 · quién valida y quién configura'}];
+
+/* ============ motor de navegación, narración y animación ============ */
+const ORDEN=['C10','C11','C12','C1','C2','C3','C4','C5','C6','C7','C15','C8','C16','C13','C9','C14'];
+const $=id=>document.getElementById(id);
+let modo='flujo', ruta=0, paso=0, guia=-1, auto=false, reloj=null, temporiz=null;
+
+/* ---------- narración por voz ---------- */
+const VOZ_OK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+let audio=true, voz=null, locucion=null, sinVoz=false;
+function eligeVoz(){
+  if(!VOZ_OK) return;
+  const vs=speechSynthesis.getVoices()||[];
+  voz = vs.find(v=>/^es-(PE|MX|US|419)/i.test(v.lang))
+     || vs.find(v=>/^es/i.test(v.lang)) || null;
+}
+if(VOZ_OK){ eligeVoz(); speechSynthesis.onvoiceschanged=eligeVoz; }
+function limpio(t){ return String(t).replace(/<[^>]+>/g,' ').replace(/«|»/g,'').replace(/\s+/g,' ').trim(); }
+function callar(){ if(VOZ_OK){ try{speechSynthesis.cancel();}catch(e){} } marcaVoz(false); }
+function marcaVoz(on){ $('audio').classList.toggle('hablando', !!on && audio);
+  $('audio').innerHTML = audio ? (on?'<span class="onda"></span>Narrando':'🔊 Audio') : '🔇 Silencio'; }
+function decir(texto, alTerminar){
+  if(!VOZ_OK || !audio || !texto){ if(alTerminar) alTerminar(false); return; }
+  callar();
+  const u=new SpeechSynthesisUtterance(limpio(texto));
+  u.lang='es-PE'; u.rate=0.97; u.pitch=1; if(voz) u.voice=voz;
+  u.onend=()=>{ marcaVoz(false); if(alTerminar) alTerminar(true); };
+  u.onerror=()=>{ marcaVoz(false); if(alTerminar) alTerminar(false); };
+  locucion=u; marcaVoz(true);
+  try{ speechSynthesis.speak(u); }catch(e){ marcaVoz(false); if(alTerminar) alTerminar(false); }
+}
+function guionPantalla(){
+  const r=escena(), p=S[r.s[Math.min(paso,r.s.length-1)]];
+  const cus=p.cu.map(c=>c.replace('-',' ')+', '+CU[c][0]+', actor '+CU[c][1]).join('. También interviene ');
+  return 'Pantalla '+p.t+'. Caso de uso '+cus+'. '+limpio(p.lead)+
+         ' Reglas que la gobiernan: '+p.rn.join('; ')+'.';
+}
+function guionGuia(i){
+  const r=escena(), p=S[r.s[Math.min(paso,r.s.length-1)]];
+  if(!p.pasos||!p.pasos[i]) return '';
+  return 'Punto '+(i+1)+': '+p.pasos[i][0]+'. '+p.pasos[i][1];
+}
+
+/* ---------- rutas ---------- */
+function rutas(){
+  if(modo==='flujo') return FLUJOS.map((f,i)=>({et:(i+1)+'. '+f.n, s:f.s, m:f.a+' · '+f.m}));
+  const paq={};
+  ORDEN.forEach(id=>S[id].cu.forEach(c=>{(paq[CU[c][2]]=paq[CU[c][2]]||[]).push([c,id]);}));
+  const out=[];
+  Object.keys(paq).forEach(p=>{
+    const vistos={};
+    paq[p].forEach(([c,id])=>{(vistos[c]=vistos[c]||[]).push(id);});
+    Object.keys(vistos).sort().forEach(c=>out.push({et:c+' '+CU[c][0], s:vistos[c], m:'Actor: '+CU[c][1]+' · paquete: '+p}));
+  });
+  return out;
+}
+function pintaModos(){
+  $('modos').innerHTML=[['flujo','Flujo de negocio'],['cu','Caso de uso']]
+    .map(([k,t])=>`<button data-m="${k}" class="${k===modo?'on':''}">${t}</button>`).join('');
+}
+function pintaRutas(){
+  const R=rutas();
+  $('rutas').innerHTML=R.map((r,i)=>`<button data-r="${i}" class="${i===ruta?'on':''}">${r.et}</button>`).join('');
+}
+function escena(){ const R=rutas(); return R[Math.min(ruta,R.length-1)]; }
+
+/* ---------- pintado ---------- */
+function render(narra){
+  const r=escena(), id=r.s[Math.min(paso,r.s.length-1)], p=S[id];
+  $('tit').textContent=id+' · '+p.t;
+  $('meta').textContent=r.m+'  ·  pantalla '+(paso+1)+' de '+r.s.length;
+  $('dev').className='device '+p.dev;
+  $('chL').textContent=p.url; $('chR').innerHTML='<b>'+p.rol+'</b>';
+  const scr=$('scr'); scr.innerHTML=p.body;
+  scr.classList.remove('anim'); if(narra!==false){ void scr.offsetWidth; scr.classList.add('anim'); }
+  $('cuBox').innerHTML=p.cu.map(c=>`<div class="cuBox" style="margin-bottom:8px">
+     <div class="cod">${c} · ${CU[c][0]}</div><div class="act">Actor principal: ${CU[c][1]}</div>
+     <span class="paq">${CU[c][2]}</span></div>`).join('');
+  $('lead').innerHTML=p.lead;
+  $('rn').innerHTML=p.rn.map(x=>`<span class="chip rn">${x}</span>`).join('');
+  $('ev').innerHTML=p.ev.map(x=>`<span class="chip ev">${x}</span>`).join('');
+  $('obs').textContent=p.obs;
+  $('dots').innerHTML=r.s.map((_,i)=>`<i class="${i===paso?'on':''}"></i>`).join('');
+  $('prog').style.width=((paso+1)/r.s.length*100)+'%';
+  guia=-1; $('guia').classList.remove('on');
+  $('ant').disabled=(ruta===0&&paso===0);
+  document.querySelectorAll('[data-g]').forEach(e=>e.classList.remove('foco'));
+  cuenta();
+  if(narra!==false) narrar();
+}
+function mostrarGuia(i,narra){
+  const r=escena(), p=S[r.s[Math.min(paso,r.s.length-1)]];
+  const n=p.pasos?p.pasos.length:0;
+  document.querySelectorAll('[data-g]').forEach(e=>e.classList.remove('foco'));
+  if(i<0||i>=n){ guia=-1; $('guia').classList.remove('on'); if(narra!==false) narrar(); return; }
+  guia=i;
+  const el=document.querySelector('[data-g="'+i+'"]');
+  if(el) el.classList.add('foco');
+  $('guiaN').textContent='Guía '+(i+1)+' de '+n+' · '+p.pasos[i][0];
+  $('guiaT').textContent=p.pasos[i][1];
+  $('guia').classList.add('on');
+  $('ant').disabled=false;
+  if(narra!==false) narrar();
+}
+function narrar(cb){ if(sinVoz){ if(cb) cb(false); return; }
+  decir(guia<0?guionPantalla():guionGuia(guia), cb); }
+function cuenta(){
+  clearInterval(reloj);
+  const e=$('reloj'); if(!e) return;
+  let t=9*60+41;
+  reloj=setInterval(()=>{ if(!document.body.contains(e)){clearInterval(reloj);return;}
+    t--; if(t<0){clearInterval(reloj);e.textContent='00:00';return;}
+    e.textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');},1000);
+}
+
+/* ---------- avance ---------- */
+function avanzar(){
+  const r=escena(), p=S[r.s[Math.min(paso,r.s.length-1)]];
+  const n=p.pasos?p.pasos.length:0;
+  if(guia<n-1){ mostrarGuia(guia+1); return true; }
+  if(paso<r.s.length-1){ paso++; render(); return true; }
+  const R=rutas();
+  if(ruta<R.length-1){ ruta++; paso=0; pintaRutas(); render(); return true; }
+  return false;
+}
+function retroceder(){
+  if(guia>-1){ mostrarGuia(guia-1); return; }
+  if(paso>0){ paso--; render(); return; }
+  if(ruta>0){ ruta--; const R=rutas(); paso=R[ruta].s.length-1; pintaRutas(); render(); }
+}
+
+/* ---------- reproducción encadenada ---------- */
+function paraAuto(){ auto=false; clearTimeout(temporiz); temporiz=null; $('play').textContent='▶ Reproducir'; }
+function ciclo(){
+  if(!auto) return;
+  let encadenado=false;
+  const sigue=()=>{ if(!auto||encadenado) return; encadenado=true;
+    temporiz=setTimeout(()=>{ if(!auto) return;
+      sinVoz=true; const hay=avanzar(); sinVoz=false;
+      if(hay) ciclo(); else paraAuto(); }, audio&&VOZ_OK?900:3400); };
+  narrar(sigue);
+  if(!audio||!VOZ_OK) sigue();
+}
+function reproducir(){
+  if(auto){ paraAuto(); callar(); return; }
+  auto=true; $('play').textContent='❚❚ Pausar'; ciclo();
+}
+
+/* ---------- controles ---------- */
+$('audio').onclick=()=>{ audio=!audio; if(!audio) callar(); marcaVoz(false);
+  if(audio&&auto){ clearTimeout(temporiz); ciclo(); } };
+$('modos').onclick=e=>{const b=e.target.closest('button'); if(!b)return;
+  paraAuto(); callar(); modo=b.dataset.m; ruta=0; paso=0; pintaModos(); pintaRutas(); render();};
+$('rutas').onclick=e=>{const b=e.target.closest('button'); if(!b)return;
+  paraAuto(); callar(); ruta=+b.dataset.r; paso=0; pintaRutas(); render();};
+$('sig').onclick=()=>{paraAuto();avanzar();};
+$('ant').onclick=()=>{paraAuto();retroceder();};
+$('play').onclick=reproducir;
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){paraAuto();avanzar();}
+  if(e.key==='ArrowLeft'){paraAuto();retroceder();}
+  if(e.key===' '){e.preventDefault();reproducir();}
+  if(e.key.toLowerCase()==='m'){$('audio').click();}});
+window.addEventListener('beforeunload',callar);
+
+if(!VOZ_OK){ audio=false; $('audio').disabled=true; $('audio').textContent='🔇 Sin voz';
+  $('audio').title='Este navegador no ofrece síntesis de voz.'; }
+marcaVoz(false);
+$('pie').innerHTML='Prototipo de mediana fidelidad para sesiones de validación. No simula el comportamiento del '+
+ 'sistema: los campos no guardan datos, los botones no ejecutan operaciones y no hay conexión con servicios '+
+ 'externos. Datos ficticios. Las dieciséis pantallas cubren los diecinueve casos de uso de la línea base '+
+ 'académica v2.4; los códigos RF, RN, CU, CP y BD remiten al Tomo I y a los Anexos C, D y H del expediente. '+
+ '<br><br><strong>Narración.</strong> Al pulsar «Reproducir» el prototipo lee en voz alta la pantalla, el caso '+
+ 'de uso que interviene y cada punto de la guía, y avanza cuando termina de leerlo. El botón «Audio» silencia '+
+ 'la narración sin detener la reproducción, para exponer con la propia voz mientras el recorrido continúa; '+
+ 'vuelve a activarla pulsándolo de nuevo o con la tecla M. La voz la provee el navegador: si el equipo no '+
+ 'tiene instalada una voz en español, el recorrido avanza igual, en silencio. Atajos: ← y → para moverse, '+
+ 'barra espaciadora para reproducir o pausar. · Anexo C, sección C.3.2 · Grupo 5, UNFV.';
+pintaModos(); pintaRutas(); render(false);
+</script>
+</body>
+</html>
